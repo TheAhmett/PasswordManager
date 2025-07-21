@@ -12,7 +12,6 @@ const purple = "\x1b[35m"
 const turuncu = "\x1b[33m"
 const bold = "\x1b[1m"
 
-
 const encoder = new Encoder()
 const decoder = new Decoder()
 
@@ -48,7 +47,8 @@ rl.question(`Lütfen yapmak istediğiniz işlemi yazınız: `, input => {
     for (let i = 0; i < Object.keys(jsonFileData).length; i++) {
       yuri = `${Object.keys(jsonFileData)[i]}`
       kullaniciadi = jsonFileData[yuri]
-      console.log(`${purple}${i + 1}. Site: ${yuri.slice(0, 1).toLocaleUpperCase()}${yuri.slice(1).slice(0, -1)}${renk_bitis} ${red}Kullanıcı Adı: ${kullaniciadi["username"]}${renk_bitis}`)
+      const decodedUsername = decoder.write(Buffer.from(kullaniciadi.username, "base64")).finalize().toString()
+      console.log(`${purple}${i + 1}. Site: ${yuri.slice(0, 1).toLocaleUpperCase()}${yuri.slice(1).slice(0, -1)}${renk_bitis} ${red}Kullanıcı Adı: ${decodedUsername}${renk_bitis}`)
     }
     rl.close()
   } 
@@ -71,25 +71,28 @@ rl.question(`Lütfen yapmak istediğiniz işlemi yazınız: `, input => {
       })
     } else {
       console.log(`${red}Böyle bir kayıt bulunamadı${renk_bitis}`)
+      rl.close()
     }
-
-    rl.close()
   } 
   else if (input.startsWith("get") && input.split(" ").length < 3) {
     let yuri = input.split(" ")
     if (yuri.length != 2) {
       printWarning("Bir hata oluştu, lütfen daha sonra tekrar deneyin!")
+      rl.close()
+      return
     }
     let siteName = yuri[1]
-    let name = Object.keys(jsonFileData)
+    let entry = jsonFileData[siteName + "0"]
 
-    if (jsonFileData[siteName + 0] == null) {
+    if (!entry) {
       printWarning("Böyle bir site adında kayıt bulunmamakta")
+      rl.close()
+      return
     }
 
-    for (let i = 0; i < name.length; i++) {
-      console.log(jsonFileData[name[i]])
-    }
+    const decodedUsername = decoder.write(Buffer.from(entry.username, "base64")).finalize().toString()
+    const decodedPassword = decoder.write(Buffer.from(entry.password, "base64")).finalize().toString()
+    console.log(`${blue}Site: ${siteName}${renk_bitis} ${green}Kullanıcı Adı: ${decodedUsername}${renk_bitis} ${red}Şifre: ${decodedPassword}${renk_bitis}`)
     rl.close()
   }
   else if (input == "create" && input.split(" ").length == 1) {
@@ -98,6 +101,7 @@ rl.question(`Lütfen yapmak istediğiniz işlemi yazınız: `, input => {
   } 
   else {
     printWarning("Lütfen belirtilen formatta giriş yapın")
+    rl.close()
   }
 
   if (!create) rl.close()
@@ -134,12 +138,14 @@ function createAcc() {
 
       if (site.length < 3 || username.length < 3 || password.length < 3) {
         printWarning("Lütfen belirtilen formatta giriş yapın")
+        rl.close()
+        return
       }
 
       const yeniGirdi = {
         site: site.slice(0, -1),
-        username: encoder.write(username).finalize(),
-        password: encoder.write(password).finalize()
+        username: Buffer.from(encoder.write(username).finalize()).toString("base64"),
+        password: Buffer.from(encoder.write(password).finalize()).toString("base64")
       }
       jsonFileData[site] = yeniGirdi
 
