@@ -1,5 +1,6 @@
 import fs from "fs"
-import { Encoder, Decoder } from "base32.js"
+import base32 from "base32.js"
+const { Encoder, Decoder } = base32
 import readline from "readline"
 const path = "./passwords.json"
 let create = false
@@ -109,17 +110,17 @@ rl.question(`Lütfen yapmak istediğiniz işlemi yazınız: `, input => {
 
 function help() {
   console.log(`
-        Kullanabileceğiniz komutlar:
+        ${red}Kullanabileceğiniz komutlar:${renk_bitis}
 
-        ${purple}liste${renk_bitis}              : ${blue}Kayıtlı tüm siteleri listeler.${renk_bitis}
+        ${purple}liste${renk_bitis}                                     : ${blue}Kayıtlı tüm siteleri listeler.${renk_bitis}
 
-        ${purple}help${renk_bitis}                : ${blue}Yardım metnini gösterir.${renk_bitis}
+        ${purple}help${renk_bitis}                                      : ${blue}Yardım metnini gösterir.${renk_bitis}
 
-        ${purple}get${renk_bitis}  ${bold}<site_adı>${renk_bitis}      : ${blue}Belirtilen siteye ait kullanıcı adı ve şifre bilgilerini gösterir.${renk_bitis}
+        ${purple}get <site_adı>${renk_bitis}                            : ${blue}Belirtilen siteye ait kullanıcı adı ve şifre bilgilerini gösterir.${renk_bitis}
 
-        ${purple}delete${renk_bitis}  ${bold}<site_adı>${renk_bitis}   : ${blue}Belirtilen siteye ait kaydı siler.${renk_bitis}
+        ${purple}delete <site_adı>${renk_bitis}                         : ${blue}Belirtilen siteye ait kaydı siler.${renk_bitis}
 
-        ${purple}create${renk_bitis}            : ${blue}Yeni bir site, kullanıcı adı ve şifre kaydı oluşturur.${renk_bitis}
+        ${purple}create <site_adı> <kullanıcı_adı> <şifre>${renk_bitis} : ${blue}Yeni bir site, kullanıcı adı ve şifre kaydı oluşturur.${renk_bitis}
     `)
   rl.close()
 }
