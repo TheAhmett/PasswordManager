@@ -1,4 +1,5 @@
 import fs from "fs"
+import { Encoder, Decoder } from "base32.js"
 import readline from "readline"
 const path = "./passwords.json"
 let create = false
@@ -10,6 +11,10 @@ const blue = "\x1b[34m"
 const purple = "\x1b[35m"
 const turuncu = "\x1b[33m"
 const bold = "\x1b[1m"
+
+
+const encoder = new Encoder()
+const decoder = new Decoder()
 
 function printWarning(msg) {
   console.log(`${turuncu}${bold}UYARI:${renk_bitis} ${turuncu}${msg}${renk_bitis}`)
@@ -133,8 +138,8 @@ function createAcc() {
 
       const yeniGirdi = {
         site: site.slice(0, -1),
-        username: username,
-        password: password
+        username: encoder.write(username).finalize(),
+        password: encoder.write(password).finalize()
       }
       jsonFileData[site] = yeniGirdi
 
