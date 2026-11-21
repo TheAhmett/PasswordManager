@@ -43,58 +43,16 @@ fs.readFile(path, "utf8", (err, data) => {
 rl.question(`Lütfen yapmak istediğiniz işlemi yazınız: `, input => {
   input = input.trim().toLocaleLowerCase()
   if (input == "liste" && input.split(" ").length == 1) {
-    let yuri
-    let kullaniciadi
-    for (let i = 0; i < Object.keys(jsonFileData).length; i++) {
-      yuri = `${Object.keys(jsonFileData)[i]}`
-      kullaniciadi = jsonFileData[yuri]
-      const decodedUsername = decoder.write(Buffer.from(kullaniciadi.username, "base64")).finalize().toString()
-      console.log(`${purple}${i + 1}. Site: ${yuri.slice(0, 1).toLocaleUpperCase()}${yuri.slice(1).slice(0, -1)}${renk_bitis} ${red}Kullanıcı Adı: ${decodedUsername}${renk_bitis}`)
-    }
-    rl.close()
+    liste(input)
   } 
   else if (input == "help" && input.split(" ").length == 1) {
     help()
   } 
   else if (input.startsWith("delete") && input.split(" ").length < 3) {
-    let yuri = input.split(" ")
-    let site = yuri[1]
-    if (yuri.length != 2) {
-      printWarning("Bir hata oluştu, lütfen daha sonra tekrar deneyin!")
-    }
-
-    if (jsonFileData[site]) {
-      delete jsonFileData[site]
-
-      saveDataToFile(() => {
-        console.log(`${green}Kayıt başarıyla silindi${renk_bitis}`)
-        rl.close()
-      })
-    } else {
-      console.log(`${red}Böyle bir kayıt bulunamadı${renk_bitis}`)
-      rl.close()
-    }
+    deleteLog(input)
   } 
   else if (input.startsWith("get") && input.split(" ").length < 3) {
-    let yuri = input.split(" ")
-    if (yuri.length != 2) {
-      printWarning("Bir hata oluştu, lütfen daha sonra tekrar deneyin!")
-      rl.close()
-      return
-    }
-    let siteName = yuri[1]
-    let entry = jsonFileData[siteName + "0"]
-
-    if (!entry) {
-      printWarning("Böyle bir site adında kayıt bulunmamakta")
-      rl.close()
-      return
-    }
-
-    const decodedUsername = decoder.write(Buffer.from(entry.username, "base64")).finalize().toString()
-    const decodedPassword = decoder.write(Buffer.from(entry.password, "base64")).finalize().toString()
-    console.log(`${blue}Site: ${siteName}${renk_bitis} ${green}Kullanıcı Adı: ${decodedUsername}${renk_bitis} ${red}Şifre: ${decodedPassword}${renk_bitis}`)
-    rl.close()
+    get(input)
   }
   else if (input == "create" && input.split(" ").length == 1) {
     create = true
@@ -171,4 +129,58 @@ function saveDataToFile(callback) {
       callback()
     }
   })
+}
+
+function get(input) {
+      let yuri = input.split(" ")
+    if (yuri.length != 2) {
+      printWarning("Bir hata oluştu, lütfen daha sonra tekrar deneyin!")
+      rl.close()
+      return
+    }
+    let siteName = yuri[1]
+    let entry = jsonFileData[siteName + "0"]
+
+    if (!entry) {
+      printWarning("Böyle bir site adında kayıt bulunmamakta")
+      rl.close()
+      return
+    }
+
+    const decodedUsername = decoder.write(Buffer.from(entry.username, "base64")).finalize().toString()
+    const decodedPassword = decoder.write(Buffer.from(entry.password, "base64")).finalize().toString()
+    console.log(`${blue}Site: ${siteName}${renk_bitis} ${green}Kullanıcı Adı: ${decodedUsername}${renk_bitis} ${red}Şifre: ${decodedPassword}${renk_bitis}`)
+    rl.close()
+}
+
+function deleteLog(input){
+      let yuri = input.split(" ")
+    let site = yuri[1]
+    if (yuri.length != 2) {
+      printWarning("Bir hata oluştu, lütfen daha sonra tekrar deneyin!")
+    }
+
+    if (jsonFileData[site]) {
+      delete jsonFileData[site]
+
+      saveDataToFile(() => {
+        console.log(`${green}Kayıt başarıyla silindi${renk_bitis}`)
+        rl.close()
+      })
+    } else {
+      console.log(`${red}Böyle bir kayıt bulunamadı${renk_bitis}`)
+      rl.close()
+    }
+}
+
+function liste(input){
+    let yuri
+    let kullaniciadi
+    for (let i = 0; i < Object.keys(jsonFileData).length; i++) {
+      yuri = `${Object.keys(jsonFileData)[i]}`
+      kullaniciadi = jsonFileData[yuri]
+      const decodedUsername = decoder.write(Buffer.from(kullaniciadi.username, "base64")).finalize().toString()
+      console.log(`${purple}${i + 1}. Site: ${yuri.slice(0, 1).toLocaleUpperCase()}${yuri.slice(1).slice(0, -1)}${renk_bitis} ${red}Kullanıcı Adı: ${decodedUsername}${renk_bitis}`)
+    }
+    rl.close()
 }
