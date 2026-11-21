@@ -20,7 +20,8 @@ function sifrele(text) {
 
 function coz(data) {
   const minos = new Decoder()
-  return minos.write(Buffer.from(data, "base64")).finalize().toString()
+  const base32Str = Buffer.from(data, "base64").toString()
+  return minos.write(base32Str).finalize().toString()
 }
 
 function printWarning(msg) {
